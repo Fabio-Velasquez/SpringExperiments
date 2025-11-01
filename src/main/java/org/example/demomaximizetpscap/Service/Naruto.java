@@ -1,6 +1,7 @@
 package org.example.demomaximizetpscap.Service;
 
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import org.example.demomaximizetpscap.ApiClient.ApiClient;
 import org.example.demomaximizetpscap.model.CharacterEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,18 +12,26 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class Naruto {
+public class Naruto implements ApiClient<CharacterEntity> {
     private final RestTemplate restTemplate;
+
     @Value("https://dattebayo-api.onrender.com")
     private String narutoUrl;
+
     public Naruto(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
+
     @RateLimiter(name = "getCharacterById")
-    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 5000))
-    public CharacterEntity getCharacterById(String id) {
+    @Override
+    public CharacterEntity call(String id) {
         return restTemplate.getForObject(narutoUrl + "/characters/" + id, CharacterEntity.class);
     }
+
+
+
+
+
 
 
 
